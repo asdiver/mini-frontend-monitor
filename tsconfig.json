@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "ES6",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "declaration": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noUnusedLocals": true,
+    "paths":{
+      "@/*": ["src/*"],
+    },
+    "types": [
+      "vitest/globals"
+      // "@types/node"
+    ]
+  },
+  "include": [
+    "src",
+    "test",
+    // "vitest.config.ts"
+  ],
+}

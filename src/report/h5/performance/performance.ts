@@ -1,20 +1,17 @@
 import { Report } from '../../../report';
 
+import type { Content } from '../../../report';
+
 /**
  * 禁止实例化此对象
  */
-export class PerformanceReport extends Report {
-
+export abstract class PerformanceReport extends Report {
   // 所有继承了PerformanceReport的对象
-  static reports = []
+  static reports: PerformanceReport[] = [];
   // 上报数据缓存
-  static contents = []
+  static contents: Content[] = [];
   // 记录上报次数
-  static signTimes = 0
-
-  
-
-
+  static signTimes = 0;
 
   constructor() {
     /**
@@ -26,19 +23,17 @@ export class PerformanceReport extends Report {
 
   /**
    * 累计收集所有performance上报数据
-   * @param {*} content
    */
-  noticeSuper(content) {
+  noticeSuper(content: Content | Content[]) {
     content instanceof Array
-    ? PerformanceReport.contents.push(...content)
-    : PerformanceReport.contents.push(content)
+      ? PerformanceReport.contents.push(...content)
+      : PerformanceReport.contents.push(content);
 
-    PerformanceReport.signTimes++
-    
+    PerformanceReport.signTimes++;
 
     // 收集
     if (PerformanceReport.signTimes === PerformanceReport.reports.length) {
-      PerformanceReport.signTimes = 0
+      PerformanceReport.signTimes = 0;
       this.notice(PerformanceReport.contents);
     }
   }

@@ -1,15 +1,22 @@
 import { PerformanceReport } from './performance';
 
+import { PerformanceType } from './type-enum';
 
 class FirstPaint extends PerformanceReport {
-  firstPaintObserver = null
+  firstPaintObserver: PerformanceObserver | null = null;
 
-  init = function() {
+  init = () => {
+    debugger;
     const firstPaintObserver = new PerformanceObserver((list) => {
+      debugger;
       const contents = list.getEntries().map((item) => {
+        const type = item.name === PerformanceType.firstPaint
+          ? PerformanceType.firstPaint
+          : PerformanceType.firstContentfulPaint;
+
         return {
-          type: item.name,
-          data: { startTime: parseInt(item.startTime) }
+          type,
+          data: { startTime: Math.floor(item.startTime) },
         };
       });
       // 上报
@@ -21,20 +28,11 @@ class FirstPaint extends PerformanceReport {
     firstPaintObserver.observe({ entryTypes: ['paint'] });
 
     this.firstPaintObserver = firstPaintObserver;
+  };
 
-  }
-
-  destroy = function() {
-    this.firstPaintObserver.disconnect();
-  }
+  destroy = () => {
+    (this.firstPaintObserver as PerformanceObserver).disconnect();
+  };
 }
 
-
 export const firstPaint = new FirstPaint();
-
-
-
-
-
-
-

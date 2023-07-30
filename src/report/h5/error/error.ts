@@ -1,16 +1,17 @@
 import { Report } from '../../../report';
 
+import type { Content } from '../../../report';
+
 /**
  * 禁止实例化此对象
  */
-export class ErrorReport extends Report {
+export abstract class ErrorReport extends Report {
+  static contents: Content[] = [];
 
-  static contents = []
-
-  static reports = []
+  static reports: ErrorReport[] = [];
 
   // 获取ErrorReport所属配置
-  config =this.config.error
+  config = Report.config.error;
 
   constructor() {
     /**
@@ -22,9 +23,8 @@ export class ErrorReport extends Report {
 
   /**
    * 累计收集
-   * @param {*} content
    */
-  noticeSuper(content) {
+  noticeSuper(content: Content) {
     ErrorReport.contents.push(content);
     // 提交
     if (ErrorReport.contents.length >= this.config.scriptCollectCount) {
@@ -35,6 +35,6 @@ export class ErrorReport extends Report {
 }
 
 // 页面卸载前上报所有数据
-window.addEventListener("beforeunload", ()=>{
-  ErrorReport.prototype.notice(ErrorReport.contents)
-})
+window.addEventListener('beforeunload', () => {
+  ErrorReport.prototype.notice(ErrorReport.contents);
+});

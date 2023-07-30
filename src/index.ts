@@ -1,21 +1,18 @@
 import { h5Reports, expand } from './report/h5/index';
 
 import { initNotice } from './report';
+import type { LooseConfig, NoticeCallback, Report } from './report';
 
 class Monitor {
-
   // 单例保存位置
-  static singleton = null
+  static singleton: Monitor;
 
-  static reports = null
+  static reports: Report[] = [];
 
   /**
    * 初始化
-   * @param {Function} callBack 通知回调
-   * @param {Object} config 监控配置
-   * @returns
    */
-  constructor(callBack, config = { performance: {}, error: {}, user: {} }) {
+  constructor(callBack: NoticeCallback, config: LooseConfig = {}) {
     // 单例
     if (Monitor.singleton) {
       return Monitor.singleton;
@@ -31,7 +28,6 @@ class Monitor {
     Monitor.reports.forEach((report) => {
       report.init();
     });
-
   }
 
   destroy() {
@@ -39,7 +35,6 @@ class Monitor {
       report.destroy();
     });
   }
-
 }
 // TODO 如果跨端需要环境判断
 // Monitor 注册监听系统
