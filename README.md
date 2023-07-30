@@ -120,6 +120,8 @@ class myRport extends expand.PerformanceReport{
     
   }
 }
+//停止监控
+monitor.destroy()
 ```
 
 
