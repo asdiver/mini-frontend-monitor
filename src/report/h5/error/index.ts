@@ -1,8 +1,5 @@
 // 加载
-import './script';
-
-// 拿数组
-import { ErrorReport } from './error';
+import { Script } from './script';
 
 export * from './error';
-export const errorReports = ErrorReport.reports;
+export const errorReports = [Script];

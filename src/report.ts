@@ -49,7 +49,6 @@ export abstract class Report {
 
 export function initNotice(notice: NoticeCallback, config: LooseConfig) {
   Report.prototype.notice = notice;
-
   const target = Report.config;
   // 在原对象基础上配置合并 通过遍历是为了保持二层对象指针不被覆盖
   if (config.error) {

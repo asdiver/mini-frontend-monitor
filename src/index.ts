@@ -7,7 +7,7 @@ class Monitor {
   // 单例保存位置
   static singleton: Monitor;
 
-  static reports: Report[] = [];
+  static reportsInstance: Report[] = [];
 
   /**
    * 初始化
@@ -19,19 +19,23 @@ class Monitor {
     }
 
     Monitor.singleton = this;
+
     initNotice(callBack, config);
     // TODO 如果跨端需要环境判断
     // if (typeof window !== 'undefined') {
-    Monitor.reports = h5Reports;
     // }
 
-    Monitor.reports.forEach((report) => {
+    h5Reports.forEach((Report) => {
+      Monitor.reportsInstance.push(new Report());
+    });
+
+    Monitor.reportsInstance.forEach((report) => {
       report.init();
     });
   }
 
   destroy() {
-    Monitor.reports.forEach((report) => {
+    Monitor.reportsInstance.forEach((report) => {
       report.destroy();
     });
   }

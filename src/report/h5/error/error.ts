@@ -1,5 +1,4 @@
 import { Report } from '../../../report';
-
 import type { Content } from '../../../report';
 
 /**

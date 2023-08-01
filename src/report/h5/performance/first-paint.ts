@@ -2,13 +2,11 @@ import { PerformanceReport } from './performance';
 
 import { PerformanceType } from './type-enum';
 
-class FirstPaint extends PerformanceReport {
+export class FirstPaint extends PerformanceReport {
   firstPaintObserver: PerformanceObserver | null = null;
 
   init = () => {
-    debugger;
-    const firstPaintObserver = new PerformanceObserver((list) => {
-      debugger;
+    const firstPaintObserver = new window.PerformanceObserver((list) => {
       const contents = list.getEntries().map((item) => {
         const type = item.name === PerformanceType.firstPaint
           ? PerformanceType.firstPaint
@@ -34,5 +32,3 @@ class FirstPaint extends PerformanceReport {
     (this.firstPaintObserver as PerformanceObserver).disconnect();
   };
 }
-
-export const firstPaint = new FirstPaint();

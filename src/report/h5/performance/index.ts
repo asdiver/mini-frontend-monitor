@@ -1,9 +1,6 @@
 // 加载
-import './first-paint';
-import './load';
-
-// 拿数组
-import { PerformanceReport } from './performance';
+import { FirstPaint } from './first-paint';
+import { Load } from './load';
 
 export * from './performance';
-export const performanceReports = PerformanceReport.reports;
+export const performanceReports = [FirstPaint, Load];

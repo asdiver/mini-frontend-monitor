@@ -8,7 +8,7 @@ interface TargetElement {
   tagName: string;
 }
 
-class Script extends ErrorReport {
+export class Script extends ErrorReport {
   errorCallback = (e: ErrorEvent) => {
     if (e.target === window) {
       const { lineno, colno, error } = e;
@@ -30,5 +30,3 @@ class Script extends ErrorReport {
     window.removeEventListener('error', this.errorCallback);
   };
 }
-
-export const script = new Script();

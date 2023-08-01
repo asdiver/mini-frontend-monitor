@@ -1,8 +1,5 @@
 // 加载
-import './footprint';
-
-// 拿数组
-import { OperateReport } from './operate';
+import { Footprint } from './footprint';
 
 export * from './operate';
-export const operateReports = OperateReport.reports;
+export const operateReports = [Footprint];

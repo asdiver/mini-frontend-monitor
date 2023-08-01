@@ -2,10 +2,10 @@ import { OperateReport } from './operate';
 
 import { OperateType } from './type-enum';
 
-class Footprint extends OperateReport {
+export class Footprint extends OperateReport {
   // 初始的history对象
-  static originHistory = window.history;
-  static originHistoryDescriptor = Object.getOwnPropertyDescriptor(window, 'history') as PropertyDescriptor;
+  originHistory = window.history;
+  originHistoryDescriptor = Object.getOwnPropertyDescriptor(window, 'history') as PropertyDescriptor;
 
   // 监听滚动
   static depth = 0;
@@ -17,17 +17,17 @@ class Footprint extends OperateReport {
   };
 
   // 对history代理的proxy对象
-  historyProxy = new Proxy(history, {
+  historyProxy = new window.Proxy(history, {
     get: (target, key) => {
       // 可能是执行 也有可能是单纯获取 change方法会兜底
       if (key === 'back' || key === 'forward' || key === 'go' || key === 'pushState' || key === 'replaceState') {
         const time = Math.floor(performance.now());
         setTimeout(() => this.change(time));
       }
-      const returnValue: any = Footprint.originHistory[key as (keyof typeof Footprint.originHistory)];
+      const returnValue: any = this.originHistory[key as (keyof typeof this.originHistory)];
 
       return returnValue instanceof Function
-        ? returnValue.bind(Footprint.originHistory)
+        ? returnValue.bind(this.originHistory)
         : returnValue;
     },
   });
@@ -111,19 +111,17 @@ class Footprint extends OperateReport {
       window.removeEventListener('hashchange', this.packChange);
     }
     // 还原
-    Object.defineProperty(window, 'history', Footprint.originHistoryDescriptor);
+    Object.defineProperty(window, 'history', this.originHistoryDescriptor);
 
     window.removeEventListener('popstate', this.packChange);
 
     window.removeEventListener('beforeunload', this.packChange);
 
-    document.removeEventListener('scroll', this.scrollCallback);
+    window.document.removeEventListener('scroll', this.scrollCallback);
   };
 
   // 获取要上传的地址
   getPath() {
-    return location.pathname + (this.config.footprintIgnoreHash ? '' : location.hash);
+    return window.location.pathname + (this.config.footprintIgnoreHash ? '' : window.location.hash);
   }
 }
-
-export const footprint = new Footprint();

@@ -9,6 +9,7 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "declaration": true,
+    "outDir": "dist",
     "rootDir": ".",
     "baseUrl": ".",
     "skipLibCheck": true,
@@ -18,8 +19,7 @@
       "@/*": ["src/*"],
     },
     "types": [
-      "vitest/globals"
-      // "@types/node"
+      "@types/node"
     ]
   },
   "include": [
@@ -27,4 +27,7 @@
     "test",
     // "vitest.config.ts"
   ],
+  "exclude": [
+    "dist"
+  ]
 }
