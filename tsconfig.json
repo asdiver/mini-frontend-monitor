@@ -25,9 +25,5 @@
   "include": [
     "src",
     "test",
-    // "vitest.config.ts"
-  ],
-  "exclude": [
-    "dist"
   ]
 }

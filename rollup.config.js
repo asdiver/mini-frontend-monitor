@@ -1,13 +1,17 @@
 import typescript from '@rollup/plugin-typescript';
 
-export default {
-  input: 'tests/index.js',
-  output: [{
-    file: 'dist/index.js',
-    format: 'es',
+export default [
+  {
+    input: 'src/index.ts',
+    output: {
+      file: 'dist/index.js',
+      format: 'es',
+    },
+    plugins: [typescript()],
   }, {
-    file: 'dist/index.ts',
-    format: 'es',
-  }],
-  plugins: [typescript()],
-};
+    input: 'tests/entry.js',
+    output: {
+      file: 'tests/index.js',
+      format: 'es',
+    },
+  }];
