@@ -9,9 +9,10 @@ export default [
     },
     plugins: [typescript()],
   }, {
-    input: 'tests/entry.js',
+    // 更新测试文件
+    input: 'tests/report-jump/entry-esm.js',
     output: {
-      file: 'tests/index.js',
+      file: 'tests/report-jump/entry.js',
       format: 'es',
     },
   }];

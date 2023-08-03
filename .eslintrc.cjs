@@ -8,6 +8,6 @@ module.exports = {
     // 关闭必须接受new对象
     "no-new":"off",
     // todo
-    "no-console":off,
+    "no-console":"off",
   }
 };

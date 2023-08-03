@@ -77,7 +77,6 @@ class FirstPaint extends PerformanceReport {
         this.firstPaintObserver = null;
         this.init = () => {
             const firstPaintObserver = new window.PerformanceObserver((list) => {
-                console.log(list);
                 const contents = list.getEntries().map((item) => {
                     const type = item.name === PerformanceType.firstPaint
                         ? PerformanceType.firstPaint
@@ -351,11 +350,10 @@ class Monitor {
 }
 Monitor.reportsInstance = [];
 
+window.report = [];
 new Monitor(
   (contents) => {
-    console.log(contents);
-    const custom = new CustomEvent('report', { detail: contents });
-    window.dispatchEvent(custom);
+    window.report.push(...contents);
   },
 
 );
