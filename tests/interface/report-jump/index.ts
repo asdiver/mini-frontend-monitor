@@ -7,7 +7,7 @@ interface Content {
 }
 
 // 检查函数类型
-type FindTarget = (contents: Content[]) => void | Content;
+type FindTarget = (contents: Content[]) => void | Content | true;
 
 export async function checkReport(page: Page, findTarget: FindTarget, config = { url: 'https://cn.vitest.dev', isConsole: false }) {
   // 测试环境是否复现所有浏览器打印数据
@@ -20,7 +20,7 @@ export async function checkReport(page: Page, findTarget: FindTarget, config = {
     });
   }
 
-  await page.addInitScript({ path: './tests/report-jump/entry.js' });
+  await page.addInitScript({ path: './tests/interface/report-jump/entry.js' });
   await page.goto(config.url);
 
   return page.evaluate((findTarget) => {
