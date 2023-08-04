@@ -19,8 +19,8 @@ export class Footprint extends OperateReport {
   // 对history代理的proxy对象
   historyProxy = new window.Proxy(history, {
     get: (target, key) => {
-      // 可能是执行 也有可能是单纯获取 change方法会兜底
-      if (key === 'back' || key === 'forward' || key === 'go' || key === 'pushState' || key === 'replaceState') {
+      // 获取的目标可能是变量或者函数 change方法会兜底
+      if (key === 'pushState' || key === 'replaceState') {
         const time = Math.floor(performance.now());
         setTimeout(() => this.change(time));
       }
@@ -82,6 +82,11 @@ export class Footprint extends OperateReport {
     typeof params === 'number' ? this.change(params) : this.change();
   };
 
+  preventDefaultChange = (e: Event) => {
+    e.preventDefault();
+    this.change();
+  };
+
   init = () => {
     // 初始记录当前url
     this.lastPath = this.getPath();
@@ -101,7 +106,7 @@ export class Footprint extends OperateReport {
     // 用户手动前进后退
     window.addEventListener('popstate', this.packChange);
     // 页面关闭前
-    window.addEventListener('beforeunload', this.packChange);
+    window.addEventListener('beforeunload', this.preventDefaultChange);
 
     document.addEventListener('scroll', this.scrollCallback);
   };
@@ -115,7 +120,7 @@ export class Footprint extends OperateReport {
 
     window.removeEventListener('popstate', this.packChange);
 
-    window.removeEventListener('beforeunload', this.packChange);
+    window.removeEventListener('beforeunload', this.preventDefaultChange);
 
     window.document.removeEventListener('scroll', this.scrollCallback);
   };

@@ -1,4 +1,4 @@
-import { Monitor } from '../../dist/index';
+import { Monitor } from '../../../dist/index';
 
 window.report = [];
 new Monitor(

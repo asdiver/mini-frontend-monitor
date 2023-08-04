@@ -6,7 +6,7 @@ test('first-paint', async ({ page }) => {
   await checkReport(page, (contents) => {
     for (const item of contents) {
       if (item.type === 'first-contentful-paint' || item.type === 'first-paint') {
-        return true;
+        return [];
       }
     }
   });

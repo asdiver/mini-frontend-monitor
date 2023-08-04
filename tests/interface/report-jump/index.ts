@@ -3,11 +3,11 @@ import type { Page } from '@playwright/test';
 // 目标数据
 interface Content {
   type: string;
-  data: unknown;
+  data: any;
 }
 
-// 检查函数类型 void 继续检查，Content 成功检查 返回结果， false 检查错误 返回结果
-type FindTarget = (contents: Content[]) => void | Content | false;
+// 检查函数类型 void 继续检查，Content| true 成功检查 返回结果， false 检查错误 返回结果
+type FindTarget = (contents: Content[]) => undefined | Content[] | true | false;
 
 interface Config {
   url: string;
@@ -43,8 +43,6 @@ export async function checkReport(page: Page, findTarget: FindTarget, gotoNext =
         // undefined 为继续校验 详情看FindTarget
         if (resultTarget !== undefined) {
           resolve(resultTarget);
-        } else {
-          contents.length = 0;
         }
       };
 
