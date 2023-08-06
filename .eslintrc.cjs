@@ -9,5 +9,10 @@ module.exports = {
     "no-new":"off",
     // todo
     "no-console":"off",
+    // 对象声明换行
+    "object-property-newline": ["error", {
+      "allowAllPropertiesOnSameLine": false,
+      "allowMultiplePropertiesPerLine": false
+    }]
   }
 };

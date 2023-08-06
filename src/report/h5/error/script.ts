@@ -1,6 +1,7 @@
 import { ErrorReport } from './error';
 
 import { ErrorType } from './type-enum';
+import type { ResourceData, ScriptData } from './type-enum';
 
 interface TargetElement {
   src: string | undefined;
@@ -12,12 +13,29 @@ export class Script extends ErrorReport {
   errorCallback = (e: ErrorEvent) => {
     if (e.target === window) {
       const { lineno, colno, error } = e;
-      this.noticeSuper({ type: ErrorType.script, data: { lineno, colno, error } });
+      const data: ScriptData = {
+        lineno,
+        colno,
+        error,
+      };
+
+      this.noticeSuper({
+        type: ErrorType.script,
+        data,
+      });
     } else if (e.target) {
       const target = e.target as unknown as TargetElement;
       const url: string | undefined = target.src || target.href;
+
       if (url !== undefined) {
-        this.noticeSuper({ type: ErrorType.resource, data: { url, tagName: target.tagName } });
+        const data: ResourceData = {
+          url,
+          tagName: target.tagName,
+        };
+        this.noticeSuper({
+          type: ErrorType.resource,
+          data,
+        });
       }
     }
   };

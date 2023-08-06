@@ -1,6 +1,7 @@
 import { OperateReport } from './operate';
 
 import { OperateType } from './type-enum';
+import type { FootPrintData } from './type-enum';
 
 export class Footprint extends OperateReport {
   // 初始的history对象
@@ -61,15 +62,16 @@ export class Footprint extends OperateReport {
       newLastTime = Math.floor(performance.now());
     }
 
+    const data: FootPrintData = {
+      url: this.lastPath,
+      stopTime: newLastTime - this.lastTime,
+      depth: Footprint.depth,
+    };
+
     // 上报
     this.noticeSuper({
       type: OperateType.footprint,
-      data: {
-        url: this.lastPath,
-        stopTime: newLastTime - this.lastTime,
-        depth: Footprint.depth,
-      },
-
+      data,
     });
 
     // 更新记录

@@ -31,7 +31,7 @@ export abstract class Report {
     },
     error: {
     // 错误类型的上报至少需要几条数据
-      scriptCollectCount: 4,
+      scriptCollectCount: 1,
     },
   };
 

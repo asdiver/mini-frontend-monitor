@@ -16,7 +16,7 @@ Report.config = {
     },
     error: {
         // 错误类型的上报至少需要几条数据
-        scriptCollectCount: 4,
+        scriptCollectCount: 1,
     },
 };
 function initNotice(notice, config) {
@@ -151,6 +151,7 @@ var ErrorType;
 (function (ErrorType) {
     ErrorType["script"] = "script error";
     ErrorType["resource"] = "resource error";
+    ErrorType["request"] = "request error";
 })(ErrorType || (ErrorType = {}));
 
 class Script extends ErrorReport {
@@ -178,8 +179,65 @@ class Script extends ErrorReport {
     }
 }
 
+class Request extends ErrorReport {
+    constructor() {
+        super(...arguments);
+        // xhr重写相关
+        this.xhrWeakMap = new WeakSet();
+        this.xhrResult = (e) => {
+            const { responseURL, statusText, status, readyState } = e.target;
+            // 是否错误结果
+            if (readyState === 4 && status >= 400) {
+                const data = { responseURL, statusText, status };
+                this.noticeSuper({ type: ErrorType.request, data });
+            }
+        };
+        // fetch重写相关
+        this.packFetch = (...args) => {
+            const promise = Request.fetch.apply(window, args);
+            promise.then(this.fetchResult);
+            return promise;
+        };
+        this.fetchResult = (res) => {
+            const { status, statusText, url } = res;
+            if (status >= 400) {
+                const data = { responseURL: url, statusText, status };
+                this.noticeSuper({ type: ErrorType.request, data });
+            }
+        };
+        this.init = () => {
+            const send = Request.xhrSend;
+            const xhrWeakMap = this.xhrWeakMap;
+            const xhrResult = this.xhrResult;
+            XMLHttpRequest.prototype.send = function (...args) {
+                if (!xhrWeakMap.has(this)) {
+                    // 注册事件监听
+                    this.addEventListener('readystatechange', xhrResult);
+                    xhrWeakMap.add(this);
+                }
+                // 执行
+                send.apply(this, args);
+            };
+            Object.defineProperty(window, 'fetch', {
+                get: () => {
+                    return this.packFetch;
+                },
+            });
+        };
+        this.destroy = () => {
+            window.XMLHttpRequest.prototype.open = Request.xhrSend;
+            Object.defineProperty(window, 'fetch', Request.fetchDescriptor);
+        };
+    }
+}
+// 重写的两个对象
+Request.xhrSend = window.XMLHttpRequest.prototype.send;
+Request.fetch = window.fetch;
+// 属性修饰符保存
+Request.fetchDescriptor = Object.getOwnPropertyDescriptor(window, 'fetch');
+
 // 加载
-const errorReports = [Script];
+const errorReports = [Script, Request];
 
 /**
  * 禁止实例化此对象

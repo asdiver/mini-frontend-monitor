@@ -1,6 +1,7 @@
 import { PerformanceReport } from './performance';
 
 import { PerformanceType } from './type-enum';
+import type { FirstPaintData } from './type-enum';
 
 export class FirstPaint extends PerformanceReport {
   firstPaintObserver: PerformanceObserver | null = null;
@@ -12,9 +13,11 @@ export class FirstPaint extends PerformanceReport {
           ? PerformanceType.firstPaint
           : PerformanceType.firstContentfulPaint;
 
+        const data: FirstPaintData = { startTime: Math.floor(item.startTime) };
+
         return {
           type,
-          data: { startTime: Math.floor(item.startTime) },
+          data,
         };
       });
       // 上报
