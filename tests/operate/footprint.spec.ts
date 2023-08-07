@@ -67,19 +67,20 @@ test('footprint [history go]', async ({ page }) => {
   expect(Boolean(result)).toBeTruthy();
 });
 
-// [unload] todo
+// [unload]
 test('footprint [unload]', async ({ page }) => {
   // 调用通用检查接口
   const pend = checkReport(page, (contents) => {
-    console.log(contents);
     for (const item of contents) {
       if (item.type === 'footprint' && item.data.url === '/') {
+        console.log(item);
         return true;
       }
     }
-  });
-  page.evaluate(() => {
-    window.dispatchEvent(new Event('beforeunload', { cancelable: true }));
+  }, () => {
+    page.evaluate(() => {
+      window.dispatchEvent(new Event('beforeunload', { cancelable: true }));
+    });
   });
 
   const result = await pend;

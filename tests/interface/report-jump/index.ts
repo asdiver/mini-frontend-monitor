@@ -13,7 +13,10 @@ interface Config {
   url: string;
   isConsole: boolean;
 }
-const defineConfig = { url: 'https://cn.vitest.dev', isConsole: true };
+const defineConfig = {
+  url: 'https://cn.vitest.dev',
+  isConsole: true,
+};
 export async function checkReport(page: Page, findTarget: FindTarget, gotoNext = () => {}, config: Partial<Config> = defineConfig) {
   const finalConfig = Object.assign(defineConfig, config);
 

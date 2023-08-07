@@ -81,9 +81,10 @@ class FirstPaint extends PerformanceReport {
                     const type = item.name === PerformanceType.firstPaint
                         ? PerformanceType.firstPaint
                         : PerformanceType.firstContentfulPaint;
+                    const data = { startTime: Math.floor(item.startTime) };
                     return {
                         type,
-                        data: { startTime: Math.floor(item.startTime) },
+                        data,
                     };
                 });
                 // 上报
@@ -105,7 +106,11 @@ class Load extends PerformanceReport {
         super(...arguments);
         this.init = () => {
             window.addEventListener('load', () => {
-                this.noticeSuper({ type: PerformanceType.load, data: { startTime: Math.floor(performance.now()) } });
+                const data = { startTime: Math.floor(performance.now()) };
+                this.noticeSuper({
+                    type: PerformanceType.load,
+                    data,
+                });
             }, { once: true });
         };
         this.destroy = function () { };
@@ -160,13 +165,28 @@ class Script extends ErrorReport {
         this.errorCallback = (e) => {
             if (e.target === window) {
                 const { lineno, colno, error } = e;
-                this.noticeSuper({ type: ErrorType.script, data: { lineno, colno, error } });
+                const data = {
+                    lineno,
+                    colno,
+                    error,
+                };
+                this.noticeSuper({
+                    type: ErrorType.script,
+                    data,
+                });
             }
             else if (e.target) {
                 const target = e.target;
                 const url = target.src || target.href;
                 if (url !== undefined) {
-                    this.noticeSuper({ type: ErrorType.resource, data: { url, tagName: target.tagName } });
+                    const data = {
+                        url,
+                        tagName: target.tagName,
+                    };
+                    this.noticeSuper({
+                        type: ErrorType.resource,
+                        data,
+                    });
                 }
             }
         };
@@ -188,8 +208,16 @@ class Request extends ErrorReport {
             const { responseURL, statusText, status, readyState } = e.target;
             // 是否错误结果
             if (readyState === 4 && status >= 400) {
-                const data = { responseURL, statusText, status };
-                this.noticeSuper({ type: ErrorType.request, data });
+                const data = {
+                    responseURL,
+                    statusText,
+                    status,
+                    mode: 'xhr',
+                };
+                this.noticeSuper({
+                    type: ErrorType.request,
+                    data,
+                });
             }
         };
         // fetch重写相关
@@ -201,8 +229,16 @@ class Request extends ErrorReport {
         this.fetchResult = (res) => {
             const { status, statusText, url } = res;
             if (status >= 400) {
-                const data = { responseURL: url, statusText, status };
-                this.noticeSuper({ type: ErrorType.request, data });
+                const data = {
+                    responseURL: url,
+                    statusText,
+                    status,
+                    mode: 'fetch',
+                };
+                this.noticeSuper({
+                    type: ErrorType.request,
+                    data,
+                });
             }
         };
         this.init = () => {
@@ -296,12 +332,13 @@ class Footprint extends OperateReport {
         // 上次的url
         this.lastPath = '';
         /**
-         * 上报回调接口 url变动之后调用
+         * newLastTime 指定触发时间
+         * check 是否检查url更新
          */
-        this.change = (newLastTime) => {
+        this.change = (newLastTime, check = true) => {
             const newPath = this.getPath();
             // url没变则不执行
-            if (newPath === this.lastPath) {
+            if (check && newPath === this.lastPath) {
                 return;
             }
             // 检查配置url的过滤
@@ -319,14 +356,15 @@ class Footprint extends OperateReport {
             if (typeof newLastTime === 'undefined') {
                 newLastTime = Math.floor(performance.now());
             }
+            const data = {
+                url: this.lastPath,
+                stopTime: newLastTime - this.lastTime,
+                depth: Footprint.depth,
+            };
             // 上报
             this.noticeSuper({
                 type: OperateType.footprint,
-                data: {
-                    url: this.lastPath,
-                    stopTime: newLastTime - this.lastTime,
-                    depth: Footprint.depth,
-                },
+                data,
             });
             // 更新记录
             this.lastPath = newPath;
@@ -338,7 +376,7 @@ class Footprint extends OperateReport {
         };
         this.preventDefaultChange = (e) => {
             e.preventDefault();
-            this.change();
+            this.change(undefined, false);
         };
         this.init = () => {
             // 初始记录当前url

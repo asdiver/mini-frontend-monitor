@@ -39,12 +39,13 @@ export class Footprint extends OperateReport {
   lastPath = '';
 
   /**
-   * 上报回调接口 url变动之后调用
+   * newLastTime 指定触发时间
+   * check 是否检查url更新
    */
-  change = (newLastTime?: number) => {
+  change = (newLastTime?: number, check = true) => {
     const newPath = this.getPath();
     // url没变则不执行
-    if (newPath === this.lastPath) {
+    if (check && newPath === this.lastPath) {
       return;
     }
     // 检查配置url的过滤
@@ -86,7 +87,7 @@ export class Footprint extends OperateReport {
 
   preventDefaultChange = (e: Event) => {
     e.preventDefault();
-    this.change();
+    this.change(undefined, false);
   };
 
   init = () => {
