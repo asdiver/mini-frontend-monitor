@@ -1,14 +1,13 @@
 {
   "name": "mini-frontend-monitor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "scripts": {
     "test": "npx playwright test --ui",
     "build": "rollup -c --bundleConfigAsCjs",
-    "retest":"pnpm run test & pnpm run build"
-    
+    "retest": "pnpm run test & pnpm run build"
   },
   "keywords": [],
   "author": "",
