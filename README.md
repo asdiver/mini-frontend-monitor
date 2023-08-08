@@ -110,7 +110,7 @@ Report Trigger: When the user leaves the current URL
 
 * 
 
-## 快速上手
+## Getting Started
 
 ```js
 import { Monitor,expand } from 'mini-frontend-monitor';
