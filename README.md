@@ -1,79 +1,110 @@
 # mini-frontend-monitor
 
-个人前端监控研究学习，平台为h5，可正常使用。
+[English](https://github.com/asdiver/mini-frontend-monitor/blob/main/README.md) | [简体中文](https://github.com/asdiver/mini-frontend-monitor/blob/main/README.zh-CN.md)
 
+Frontend monitoring reporting system, designed for H5 platforms, fully functional and ready for use.
 
+## Currently Supported Monitoring
 
-## 目前支持的监控
+### Errors
 
-### 错误
+Report Trigger: When the error threshold is reached
 
-上报时机：达到错误阈值条数
-
-* "script error" :js执行报错
+* "script error" :Uncaught JavaScript errors
   
-  数据:
+  Data:
   
   ```js
-  data:{
-    lineno, //错误行
-    colno,//错误列
-    error//错误对象
+  export interface ScriptData {
+    lineno: number;
+    colno: number;
+    error: any;
   }
   ```
 
-* "resource error": html资源获取失败
+* "resource error": HTML resource loading failure (Note: This error report is not completely accurate)
   
-  数据:
+  Data:
   
   ```js
-  data:{
-    url, //失败的url
-    tagName//标签名
+  export interface ResourceData {
+    /**
+     * Resource URL
+     */
+    url: string;
+    /**
+     * Tag name that fetched the resource
+     */
+    tagName: string;
+  }
+  ```
+
+tips:Due to browser API triggering mechanism, these two error types cannot capture all errors completely.
+
+* 'request error': XHR or fetch requests with response status code >= 400
+  
+  Data:
+  
+  ```js
+  export interface RequestData {
+    /**
+     * Request URL
+     */
+    responseURL: string;
+    /**
+     * Result status text
+     */
+    statusText: string;
+    /**
+     * Result status code
+     */
+    status: number;
+    /**
+     * Request mode (xhr or fetch)
+     */
+    mode: 'xhr' | 'fetch';
   }
   ```
 
 * 
 
-tips:因为浏览器机制，这两个错误类型并不能完全捕获所有错误，后续完善
+### Performance
 
-### 性能
+Report Trigger: When all performance indicators are collected and reported at once
 
-上报时机：所有性能指标收集完成后一次性上报
-
-* “load”:浏览器load事件触发时间（首屏html网络资源加载完成时间）
+* “load”:Time when the browser's load event is triggered (time when the first screen's HTML network resources are loaded)
   
-  数据:
+  Data:
   
   ```js
   data: { 
-    startTime //触发时间毫秒
+    startTime //Time triggered in milliseconds
   }
   ```
 
-* “first-paint”:标准性能指标
+* “first-paint”:Standard performance metric
   
-  数据:同上
+  Data: Same as above
 
-* “first-contentful-paint”:标准性能指标
+* “first-contentful-paint”:Standard performance metric
   
-  数据:同上
+  Data: Same as above
 
 * 
 
-### 用户
+### User
 
-上报时机：用户离开当前url
+Report Trigger: When the user leaves the current URL
 
-* "footprint":用户访问监控
+* "footprint":User access monitoring
   
-  数据:
+  Data:
   
   ```js
    data:{
-    url,//用户访问的url地址
-    stopTime,//用户停留时长 毫秒
-    depth,//访问深度 0-100
+    url,//URL visited by the user
+    stopTime,//Time the user stayed in milliseconds
+    depth,//Access depth from 0 to 100
   }
   ```
 
@@ -82,56 +113,70 @@ tips:因为浏览器机制，这两个错误类型并不能完全捕获所有错
 ## 快速上手
 
 ```js
-import { Monitor,expand } from './monitor/index';
+import { Monitor,expand } from 'mini-frontend-monitor';
 
-// 实例化形式注册监控
+// Instantiate and register monitoring in object form
 const monitor = new Monitor(
-//上报回调函数 所有数据上报都走此函数，由使用者拓展
+//Reporting callback function; all data reports go through this function and are extended by the user
 function(contents) {
   console.log(contents);
 }, 
-//自定义配置
+//Custom configurations
 {
   operate: {
-    // 排除监听的url  otherUrl比onlyUrl优先级更高 
-    // 当footprintOtherUrl长度为0则会使用footprintOnlyUrl
-
-    //监控除了url外其他url
+    // URLs excluded from monitoring; otherUrl has higher priority than onlyUrl
+    // When footprintOtherUrl is empty, footprintOnlyUrl will be used
     footprintOtherUrl: ["xxx"],
-    // 只监听指定url
+    // Only monitor specified URLs
     footprintOnlyUrl: [],
-    // 是否忽略监听hash变化
+    // Ignore hash changes in monitoring
     footprintIgnoreHash:false
 
 
   },
   error: {
-    // 错误类型的上报至少需要几条数据才上报（页面关闭前会上报所有剩下数据）
+    // Minimum number of data required for error type reporting (all remaining data will be reported before the page is closed)
     scriptCollectCount: 4
   }
 });
 
-//集成class 拓展用户自己项目需要的的监控上报
+//Integrate class to expand and customize monitoring reports for your project's needs
 class myRport extends expand.PerformanceReport{
   init(){
     this.superNotice({type:"xxx",data:{}})
   }
   destroy(){
-    
+
   }
 }
-//停止监控
+//Stop monitoring
 monitor.destroy()
 ```
 
+## Notes
 
+mini-frontend-monitor has slightly overwritten the following browser APIs to achieve monitoring purposes
+
+* window.history
+
+* window.XMLHttpRequest
+
+* window.fetch
+
+Rest assured, this has no impact on your use of native APIs. To achieve monitoring purposes, it's recommended to execute mini-frontend-monitor before other scripts.
 
 ## todo
 
-1. 整合为标准npm包
+- [x] Develop the development system using ESLint, Rollup, and TypeScript
 
-2. 完善开发体系 eslint，husky，rollup，ts ...
+- [x] Write unit tests using the Playwright library
 
-3. 加入更多监控点：xhr错误、`unhandledrejection`、performance监听所有网络资源获取以更强大...
+- [x]  Integrate and publish as a standard npm package
 
-4. 
+- [x] More monitoring data: XHR and fetch request error reporting
+
+- [ ] Add more monitoring points: `unhandledrejection` and other necessary points
+
+
+
+Feel free to ask if you have further questions or if there's anything else you'd like to know about this project!

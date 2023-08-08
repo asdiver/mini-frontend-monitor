@@ -9,6 +9,7 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "declaration": true,
+    "declarationDir": "./types",
     "outDir": "dist",
     "rootDir": ".",
     "baseUrl": ".",
